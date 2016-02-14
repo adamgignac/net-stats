@@ -1,0 +1,17 @@
+/* Override Bootstrap's stupidly narrow container */
+@media (min-width: 1200px){
+	.container{
+		width: 1380px;
+	}
+}
+
+.pi-hole .jumbotron{
+	background-color: rgba(51, 122, 183, 0.65);
+	color: white;
+	padding: 1px 40px;
+}
+
+/* Highlight the last row of the speeds table */
+#speeds tbody tr:last-child{
+	background-color: #d9edf7;
+}

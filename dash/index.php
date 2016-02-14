@@ -20,81 +20,49 @@ foreach($lines as $line){
 ?>
 <!doctype html>
 <html>
-  <head>
+ <head>
     <title>Network Stats</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-	<style>
-	.container .jumbotron{
-		background-color: rgba(51, 122, 183, 0.65);
-		color: white;
-		padding: 1px 40px;
-	}
-
-	@media (min-width: 1200px){
-		.container{
-			width: 1380px;
-		}
-	}
-
-	#speeds tbody tr:last-child{
-		background-color: #d9edf7;
-	}
-	</style>
+	<link rel="stylesheet" href="styles.css">
 	<script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
 	<script src="http://code.highcharts.com/highcharts.js"></script>
 	<script src="https://code.highcharts.com/modules/data.js"></script>
-	<script>
-		$(function(){
-			$("time").each(function(){
-				$(this).text((new Date($(this).data('unix') * 1000)).toLocaleString());
-			});
-			$("#speed-container").highcharts({
-				chart: {
-					type: "spline",
-				},
-				title:{
-					text: "Last <?=$limit?> readings"
-				},
-				data: {
-					table: "speeds",
-				},
-			});
-		});
-	</script>
+	<script src="net-stats.js"></script>
 </head>
 <body class="container">
 	<div class="page-header">
 		<h1>Network Stats <small class="pull-right">Public IP Address: <?=$ip?></small></h1>
   	</div>
-        <div class="row">
-                <div class="col-sm-6 col-md-3">
-                        <div class="jumbotron">
-                                <h1>0</h1>
-                                <p>ads blocked today</p>
-                        </div>
-                </div>
-                <div class="col-sm-6 col-md-3">
-                        <div class="jumbotron">
-                                <h1>0%</h1>
-                                <p>of today's traffic is ads</p>
-                        </div>
-                </div>
-                <div class="col-sm-6 col-md-3">
-                        <div class="jumbotron">
-                                <h1>0</h1>
-                                <p>total DNS queries</p>
-                        </div>
-                </div>
-                <div class="col-sm-6 col-md-3">
-                        <div class="jumbotron">
-                                <h1>0</h1>
-                                <p>domains being blocked</p>
-                        </div>
-                </div>
+    <div class="row pi-hole">
+    	<!-- Future integration with Pi-Hole -->
+        <div class="col-sm-6 col-md-3">
+            <div class="jumbotron">
+                <h1><span id="blocked-today">0</span></h1>
+                <p>ads blocked today</p>
+            </div>
         </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="jumbotron">
+                <h1><span id="percentage-today">0</span>%</h1>
+                <p>of today's traffic is ads</p>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="jumbotron">
+                <h1><span id="total-queries">0</span></h1>
+                <p>total DNS queries</p>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="jumbotron">
+                <h1><span id="domains-blocked">0</span></h1>
+                <p>domains being blocked</p>
+            </div>
+        </div>
+    </div>
 	<div class="row">
 		<div class="col-md-9">
-			<div class="panel panel-info">
+			<div class="panel panel-primary">
 				<div class="panel-heading">
 					<h3 class="panel-title">Internet Speeds</h3>
 				</div><!-- .panel-heading -->
@@ -109,24 +77,20 @@ foreach($lines as $line){
 									 <tr>
 		 								<th>Time</th>
 										<th>Ping (ms)</th>
-			     							<th>Down (Mbits/s)</th>
-			      							<th>Up (Mbits/s)</th>
-					     				</tr>
-			    					</thead>
-			    					<tbody>
-					  			<?php
-			    					foreach($speeds as $row){
-								?>
+		     							<th>Down (Mbits/s)</th>
+		      							<th>Up (Mbits/s)</th>
+				     				</tr>
+		    					</thead>
+		    					<tbody>
+						  			<?php foreach($speeds as $row){ ?>
 									<tr>
 										<td><time data-unix="<?=strtotime($row['timestamp'])?>"></time></td>
 										<td><?=$row['ping']?></td>
 										<td><?=$row['down']?></td>
 										<td><?=$row['up']?></td>
 									</tr>
-								<?php
-				    				}
-								?>
-    								</tbody>
+									<?php } ?>
+								</tbody>
 							</table>
 						</div><!-- .col-md-6-->
 					</div><!-- .row -->
@@ -134,30 +98,26 @@ foreach($lines as $line){
 			</div><!-- .panel -->
 		</div><!-- .col-md-9 -->
 		<div class="col-md-3">
-                        <div class="panel panel-success">
-                                <div class="panel-heading">
-                                        <h3 class="panel-title">Connected Devices</h3>
-                                </div>
-                                <table class="table">
-                                        <tbody>
-                                        <?php
-                                        $lines = @file("/home/pi/devices.list");
-                                        foreach($lines as $line){
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Connected Devices</h3>
+                </div>
+                <table class="table">
+                    <tbody>
+	                    <?php
+	                    $lines = @file("/home/pi/devices.list");
+	                    foreach($lines as $line){
 						$i = explode(": ", $line);
-                                        ?>
-                                                <tr>
-                                                        <td><?=$i[0]?></td>
+	                    ?>
+	                    <tr>
+	                        <td><?=$i[0]?></td>
 							<td><?=$i[1]?></td>
-                                                </tr>
-					<?php
-                                        }
-                                        ?>
-                                        </tbody>
-                                </table>
-                        </div>
+                        </tr>
+						<?php } ?>
+                    </tbody>
+                </table>
+            </div>
 		</div>
 	</div><!-- .row -->
 </body>
 </html>
-
-
