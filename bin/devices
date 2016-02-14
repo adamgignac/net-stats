@@ -18,7 +18,7 @@ def get_addrs():
     nmap_output = subprocess.check_output(nmap)
     addrs = []
     for line in nmap_output.split("\n"):
-	if "report" in line:
+        if "report" in line:
             # Sometimes nmap looks up hosts for us, which
             # we kinda want but not really
             addr = line.split()[-1]
@@ -43,8 +43,11 @@ def avahiLookup(ip):
         return "&lt;unknown&gt;"
 
 
-if __name__ == '__main__':
+def main():
     for address in get_addrs():
         host = avahiLookup(address)
         print "%s: %s" % (address, host)
 
+
+if __name__ == '__main__':
+    main()

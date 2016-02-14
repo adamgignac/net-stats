@@ -33,7 +33,9 @@ def addRow(connection, data):
 
 
 def checkSpeed():
-    result = subprocess.check_output(["/usr/local/bin/speedtest-cli", "--simple"]).split()
+    cmd = ["/usr/local/bin/speedtest-cli", "--simple"]
+    result = subprocess.check_output(cmd).split()
+    #        ping,    ping unit,   down,    down unit,    up,      up unit
     return result[1], result[2], result[4], result[5], result[7], result[8]
 
 
