@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+"""
+Requirements:
+    - avahi-utils
+    - nmap
+"""
+
+import subprocess
+
+
+def get_addrs():
+    """
+    Run an nmap scan on the local network, and search the output
+    for any lines containing "report". Then take the last word
+    in each line, which is the address.
+    """
+    nmap = ["nmap", "-sP", "192.168.0.1/24"]
+    nmap_output = subprocess.check_output(nmap)
+    addrs = []
+    for line in nmap_output.split("\n"):
+	if "report" in line:
+            # Sometimes nmap looks up hosts for us, which
+            # we kinda want but not really
+            addr = line.split()[-1]
+            if addr[0] == "(":
+                addr = addr[1:-1]
+            addrs.append(addr)
+    return addrs
+
+
+def avahiLookup(ip):
+    """
+    Call avahi-resolve to do a reverse lookup on the ip address.
+    If it returns, take the last part of the line, which is the
+    hostname.
+    """
+    search = ["avahi-resolve", "--address", ip]
+    with open("/dev/null", "w") as f:
+        search_output = subprocess.check_output(search, stderr=f)
+    if search_output:
+        return search_output.split()[-1]
+    else:
+        return "&lt;unknown&gt;"
+
+
+if __name__ == '__main__':
+    for address in get_addrs():
+        host = avahiLookup(address)
+        print "%s: %s" % (address, host)
+

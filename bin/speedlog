@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+import subprocess
+import logging
+import sqlite3
+
+logging.basicConfig(level=logging.DEBUG)
+
+
+def createDatabase(connection):
+    cursor = connection.cursor()
+    stmt = """
+    CREATE TABLE IF NOT EXISTS speeds
+        (timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            ping real, ping_unit text,
+            down real, down_unit text,
+            up real, up_unit text)
+    """
+    cursor.execute(stmt)
+    connection.commit()
+
+
+def addRow(connection, data):
+    cursor = connection.cursor()
+    stmt = """
+    INSERT INTO speeds (
+        ping, ping_unit,
+        down, down_unit,
+        up, up_unit
+    ) VALUES (?, ?, ?, ?, ?, ?)
+    """
+    cursor.execute(stmt, data)
+    connection.commit()
+
+
+def checkSpeed():
+    result = subprocess.check_output(["/usr/local/bin/speedtest-cli", "--simple"]).split()
+    return result[1], result[2], result[4], result[5], result[7], result[8]
+
+
+def main():
+    logging.info("Checking speeds...")
+    speeds = checkSpeed()
+    logging.info("Ping %s %s, down %s %s, up %s %s", *speeds)
+    conn = sqlite3.connect('speeds.db')
+    createDatabase(conn)
+    addRow(conn, speeds)
+    conn.close()
+
+
+if __name__ == '__main__':
+    main()
