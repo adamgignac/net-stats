@@ -12,10 +12,6 @@ while($row = $results->fetchArray()){
 }
 $speeds = array_reverse($speeds);
 
-$lines = @file("/home/pi/ip.out");
-foreach($lines as $line){
-    $ip = $line;
-}
 ?>
 <!doctype html>
 <html>
@@ -30,7 +26,7 @@ foreach($lines as $line){
 </head>
 <body class="container">
     <div class="page-header">
-        <h1>Network Stats <small class="pull-right">Public IP Address: <?=$ip?></small></h1>
+        <h1>Network Stats <small class="pull-right">Public IP Address: <?=file_get_contents("/home/pi/ip.out");?></small></h1>
     </div>
     <div class="row pi-hole">
         <!-- Future integration with Pi-Hole -->
