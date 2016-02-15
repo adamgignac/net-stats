@@ -12,7 +12,6 @@ while($row = $results->fetchArray()){
 }
 $speeds = array_reverse($speeds);
 
-$ip = "99.236.83.180";
 $lines = @file("/home/pi/ip.out");
 foreach($lines as $line){
 	$ip = $line;
